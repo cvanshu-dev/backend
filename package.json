@@ -27,8 +27,10 @@
     "@medusajs/framework": "2.13.1",
     "@medusajs/medusa": "2.13.1",
     "@tsc_tech/medusa-plugin-razorpay-payment": "file:../razorpay-plugin",
+    "connect-redis": "^9.0.0",
     "or": "^0.2.0",
-    "razorpay": "^2.9.6"
+    "razorpay": "^2.9.6",
+    "redis": "^5.12.1"
   },
   "devDependencies": {
     "@medusajs/test-utils": "2.13.1",
