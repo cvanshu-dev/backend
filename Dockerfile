@@ -1,37 +1,37 @@
-# Build stage
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install all dependencies (including dev) with legacy peer deps support
-RUN npm install --legacy-peer-deps --no-audit --no-fund
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npm run build
+# ... (Keep Builder stage as is)
 
 # Runtime stage
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files
+# 1. Copy everything needed for dependencies
 COPY package*.json ./
-
-# Copy node_modules from builder stage
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy built artifacts from builder stage
+# 2. Copy the Medusa build AND the CLI
+# Medusa v2 needs the framework files to boot
 COPY --from=builder /app/.medusa ./.medusa
+
+# 3. CRITICAL: Copy the configuration and TS files
+# medusa start looks for these in the root (./)
+COPY --from=builder /app/medusa-config.* ./
+COPY --from=builder /app/tsconfig.json ./
+
+# 4. Copy your custom start script
 COPY --from=builder /app/scripts ./scripts
 
-# Expose port
+# 5. Copy the Public folder (start.js needs this to move admin files)
+COPY --from=builder /app/public ./public
+
+# 6. Ensure the medusa binary is accessible
+# We link the local node_modules binary to the global path
+RUN ln -s /app/node_modules/.bin/medusa /usr/local/bin/medusa
+
+# Set production environment
+ENV NODE_ENV=production
+
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+# Start via your script
+CMD ["node", "scripts/start.js"]
