@@ -23,8 +23,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install production dependencies only
-RUN npm install --production
+# Copy node_modules from builder stage
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy built artifacts from builder stage
 COPY --from=builder /app/.medusa ./.medusa
