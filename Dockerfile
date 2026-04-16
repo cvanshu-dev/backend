@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (including dev)
-RUN npm ci --include=dev
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -24,7 +24,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm ci --omit=dev
+RUN npm install --production
 
 # Copy built artifacts from builder stage
 COPY --from=builder /app/.medusa ./.medusa
