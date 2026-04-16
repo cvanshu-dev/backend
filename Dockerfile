@@ -28,6 +28,7 @@ COPY --from=builder /app/node_modules ./node_modules
 
 # Copy built artifacts from builder stage
 COPY --from=builder /app/.medusa ./.medusa
+COPY --from=builder /app/scripts ./scripts
 
 # Expose port
 EXPOSE 3000
