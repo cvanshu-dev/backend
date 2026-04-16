@@ -5,4 +5,4 @@ cmds = ["NPM_CONFIG_PRODUCTION=false npm ci --include=dev"]
 cmds = ["npm run build"]
 
 [start]
-cmd = "medusa start"
+cmd = "if [ ! -f .medusa/client/index.html ]; then npm run build; fi; medusa start"
