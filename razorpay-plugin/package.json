@@ -1,0 +1,38 @@
+{
+  "name": "@tsc_tech/medusa-plugin-razorpay-payment",
+  "version": "0.0.11-patched",
+  "description": "Patched Razorpay plugin for Medusa v2",
+  "author": "patched-local",
+  "license": "MIT",
+
+  "main": ".medusa/server/src/index.js",
+
+  "files": [
+    ".medusa/server"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    "./workflows": "./.medusa/server/src/workflows/index.js",
+    "./.medusa/server/src/modules/*": "./.medusa/server/src/modules/*/index.js",
+    "./providers/*": "./.medusa/server/src/providers/*/index.js",
+    "./*": "./.medusa/server/src/*.js"
+  },
+  "keywords": [
+    "medusa",
+    "plugin",
+    "razorpay"
+  ],
+  "scripts": {
+    "build": "medusa plugin:build",
+    "dev": "medusa plugin:develop"
+  },
+  "peerDependencies": {
+    "@medusajs/medusa": "^2.0.0"
+  },
+  "dependencies": {
+    "razorpay": "^2.9.6"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
