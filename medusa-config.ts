@@ -15,7 +15,7 @@ export default defineConfig({
     
   },
 admin: {
-  path: "/admin",
+  path: "/dashboard",
 },
 
   modules: [
