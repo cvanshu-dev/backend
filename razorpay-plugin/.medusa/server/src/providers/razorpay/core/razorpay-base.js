@@ -102,7 +102,10 @@ class RazorpayBase extends utils_1.AbstractPaymentProvider {
             return razorpayCustomer;
         }
         catch (e) {
-            this.logger.error("unable to poll customer in the razorpay payment processor");
+            this.logger.error("unable to poll customer in the razorpay payment processor", {
+                error: e?.message || e,
+                code: e?.code,
+            });
             return;
         }
     }
@@ -159,8 +162,37 @@ class RazorpayBase extends utils_1.AbstractPaymentProvider {
             return razorpayCustomer;
         }
         catch (e) {
-            this.logger.error("unable to create customer in the razorpay payment processor");
+            this.logger.error("unable to create customer in the razorpay payment processor", {
+                error: e?.message || e,
+                code: e?.code,
+            });
             return;
+        }
+    }
+    async createAccountHolder({ context, }) {
+        const { account_holder, customer, idempotency_key } = context;
+        if (account_holder?.data?.id) {
+            return { id: account_holder.data.id };
+        }
+        if (!customer) {
+            throw new Error("No customer provided while creating account holder");
+        }
+        try {
+            const razorpayCustomer = await this.createRazorpayCustomer(customer, { notes: {} }, {});
+            if (!razorpayCustomer) {
+                throw new Error("Failed to create Razorpay customer");
+            }
+            return {
+                id: razorpayCustomer.id,
+                data: razorpayCustomer,
+            };
+        }
+        catch (e) {
+            this.logger.error("unable to create account holder in the razorpay payment processor", {
+                error: e?.message || e,
+                code: e?.code,
+            });
+            throw e;
         }
     }
     async editExistingRpCustomer(customer, intentRequest, extra) {
@@ -172,7 +204,10 @@ class RazorpayBase extends utils_1.AbstractPaymentProvider {
             razorpayCustomer = await this.razorpay_.customers.fetch(razorpay_id);
         }
         catch (e) {
-            this.logger.warn("unable to fetch customer in the razorpay payment processor");
+            this.logger.warn("unable to fetch customer in the razorpay payment processor", {
+                error: e?.message || e,
+                code: e?.code,
+            });
         }
         // edit the customer once fetched
         if (razorpayCustomer) {
@@ -189,7 +224,10 @@ class RazorpayBase extends utils_1.AbstractPaymentProvider {
                 razorpayCustomer = updateRazorpayCustomer;
             }
             catch (e) {
-                this.logger.warn("unable to edit customer in the razorpay payment processor");
+                this.logger.warn("unable to edit customer in the razorpay payment processor", {
+                    error: e?.message || e,
+                    code: e?.code,
+                });
             }
         }
         if (!razorpayCustomer) {
@@ -197,7 +235,10 @@ class RazorpayBase extends utils_1.AbstractPaymentProvider {
                 razorpayCustomer = await this.createRazorpayCustomer(customer, intentRequest, extra);
             }
             catch (e) {
-                this.logger.error("something is very wrong please check customer in the dashboard.");
+                this.logger.error("something is very wrong please check customer in the dashboard.", {
+                    error: e?.message || e,
+                    code: e?.code,
+                });
             }
         }
         return razorpayCustomer; // returning un modified razorpay customer
@@ -231,13 +272,19 @@ class RazorpayBase extends utils_1.AbstractPaymentProvider {
                     razorpayCustomer = await this.fetchOrPollForCustomer(customer);
                 }
                 catch (e) {
-                    this.logger.error("unable to poll customer customer in the razorpay payment processor");
+                    this.logger.error("unable to poll customer in the razorpay payment processor", {
+                        error: e?.message || e,
+                        code: e?.code,
+                    });
                 }
             }
             return razorpayCustomer;
         }
         catch (e) {
-            this.logger.error("unable to retrieve customer from cart");
+            this.logger.error("unable to retrieve customer from cart", {
+                error: e?.message || e,
+                code: e?.code,
+            });
         }
         return razorpayCustomer;
     }
